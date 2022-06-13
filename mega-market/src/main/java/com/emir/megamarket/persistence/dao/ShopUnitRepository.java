@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ShopUnitRepository extends JpaRepository<ShopUnit, String> {
 
-    List<ShopUnit> findAllByDateIsGreaterThanEqualAndDateLessThanEqual(String dateAfter, String dateBefore);
+    List<ShopUnit> findAllByDateIsGreaterThanEqualAndDateLessThanEqual(String startDate, String endDate);
 }

@@ -6,7 +6,7 @@ import com.emir.megamarket.persistence.model.ShopUnitType;
 import com.emir.megamarket.web.dto.ShopUnitImport;
 import com.emir.megamarket.web.dto.ShopUnitImportRequest;
 import com.emir.megamarket.web.dto.ShopUnitStatisticResponse;
-import com.emir.megamarket.web.dto.ShopUnitStatisticUnit;
+import com.emir.megamarket.persistence.model.ShopUnitStatisticUnit;
 import com.emir.megamarket.web.error.ShopUnitAlreadyExistException;
 import com.emir.megamarket.web.error.ShopUnitImportRequestValidationException;
 import com.emir.megamarket.web.error.ShopUnitNotFoundException;
@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -28,13 +26,16 @@ import java.util.stream.Collectors;
 @Service
 public class ShopUnitService {
 
+    private final ShopUnitStatisticService statisticService;
+
     private final ShopUnitRepository repository;
 
     private final ModelMapper mapper = new ModelMapper();
 
     private final Logger logger = LoggerFactory.getLogger(ShopUnitService.class);
 
-    public ShopUnitService(ShopUnitRepository repository) {
+    public ShopUnitService(ShopUnitStatisticService statisticService, ShopUnitRepository repository) {
+        this.statisticService = statisticService;
         this.repository = repository;
     }
 
@@ -47,9 +48,10 @@ public class ShopUnitService {
                 shopUnit.setParentShopUnit(get(shopUnit.getParentId()));
             }
             if (shopUnit.getType() == ShopUnitType.OFFER) {
-                updateParentCategories(shopUnit, shopUnitImportRequest.getUpdateDate(), true);
+                updateParentsWhenUnitAdded(shopUnit, shopUnitImportRequest.getUpdateDate());
             }
             validateShopUnit(shopUnit);
+            statisticService.addStatisticRecord(shopUnit);
             repository.save(shopUnit);
         }
     }
@@ -123,7 +125,10 @@ public class ShopUnitService {
 
     public void delete(String id) {
         ShopUnit shopUnit = repository.findById(id).orElseThrow(() -> new ShopUnitNotFoundException(id));
-        recalculatePriceWhenDeleted(shopUnit);
+
+        ShopUnitSubunitsData data = calculateSubunitsData(shopUnit);
+        updateParentsWhenUnitDeleted(shopUnit, data.getChildrenOffersCount(), data.getChildrenOffersPriceSum());
+
         repository.delete(shopUnit);
     }
 
@@ -131,42 +136,52 @@ public class ShopUnitService {
         OffsetDateTime currentDate = OffsetDateTime.parse(date);
         OffsetDateTime dayAgoDate = currentDate.minus(1, ChronoUnit.DAYS);
 
-        String dateAfter = dayAgoDate.format(DateTimeFormatter.ISO_INSTANT);
+        String startDate = dayAgoDate.format(DateTimeFormatter.ISO_INSTANT);
 
-        logger.info("Get sales between " + dateAfter + " and " + date);
+        logger.info("Get sales between " + startDate + " and " + date);
         return new ShopUnitStatisticResponse(
-                repository.findAllByDateIsGreaterThanEqualAndDateLessThanEqual(dateAfter, date)
+                repository.findAllByDateIsGreaterThanEqualAndDateLessThanEqual(startDate, date)
                         .stream()
                         .map(this::convertToStatisticUnit)
                         .collect(Collectors.toList()));
     }
 
-    private void recalculatePriceWhenDeleted(ShopUnit shopUnit) {
-        if (shopUnit.getType() == ShopUnitType.OFFER) {
-            updateParentCategories(shopUnit, null, false);
-            return;
+    private ShopUnitSubunitsData calculateSubunitsData(ShopUnit shopUnit) {
+        ShopUnitSubunitsData data = new ShopUnitSubunitsData();
+        if (shopUnit.getChildren() != null) {
+            for (ShopUnit unit : shopUnit.getChildren()) {
+                ShopUnitSubunitsData subunitData = calculateSubunitsData(unit);
+                data.setChildrenOffersCount(data.getChildrenOffersCount() + subunitData.getChildrenOffersCount());
+                data.setChildrenOffersPriceSum(data.getChildrenOffersPriceSum() + subunitData.getChildrenOffersPriceSum());
+            }
         }
-        for (ShopUnit item : shopUnit.getChildren()) {
-            recalculatePriceWhenDeleted(item);
-        }
+        return data;
     }
 
-    private void updateParentCategories(ShopUnit shopUnit, String updateDate, boolean add) {
+    private void updateParentsWhenUnitAdded(ShopUnit shopUnit, String updateDate) {
         ShopUnit currentShopUnit = shopUnit;
         while (currentShopUnit.getParentShopUnit() != null) {
             ShopUnit parentShopUnit = currentShopUnit.getParentShopUnit();
-            if (add) {
-                parentShopUnit.setChildrenOffersCount(parentShopUnit.getChildrenOffersCount() + 1);
-                parentShopUnit.setChildrenOffersSum(parentShopUnit.getChildrenOffersSum() + shopUnit.getPrice());
-                parentShopUnit.setDate(updateDate);
-            } else {
-                parentShopUnit.setChildrenOffersCount(parentShopUnit.getChildrenOffersCount() - 1);
-                parentShopUnit.setChildrenOffersSum(parentShopUnit.getChildrenOffersSum() - shopUnit.getPrice());
-            }
+            parentShopUnit.setChildrenOffersCount(parentShopUnit.getChildrenOffersCount() + 1);
+            parentShopUnit.setChildrenOffersPriceSum(parentShopUnit.getChildrenOffersPriceSum() + shopUnit.getPrice());
+            parentShopUnit.setDate(updateDate);
+            statisticService.addStatisticRecord(shopUnit);
+            parentShopUnit.setPrice(parentShopUnit.getChildrenOffersPriceSum() / parentShopUnit.getChildrenOffersCount());
+            repository.save(parentShopUnit);
+            currentShopUnit = parentShopUnit;
+        }
+    }
+
+    private void updateParentsWhenUnitDeleted(ShopUnit shopUnit, int childrenOffersCount, int childrenOffersPriceSum) {
+        ShopUnit currentShopUnit = shopUnit;
+        while (currentShopUnit.getParentShopUnit() != null) {
+            ShopUnit parentShopUnit = currentShopUnit.getParentShopUnit();
+            parentShopUnit.setChildrenOffersCount(parentShopUnit.getChildrenOffersCount() - childrenOffersCount);
+            parentShopUnit.setChildrenOffersPriceSum(parentShopUnit.getChildrenOffersPriceSum() - childrenOffersPriceSum);
             if (parentShopUnit.getChildrenOffersCount() == 0) {
                 parentShopUnit.setPrice(null);
             } else {
-                parentShopUnit.setPrice(parentShopUnit.getChildrenOffersSum() / parentShopUnit.getChildrenOffersCount());
+                parentShopUnit.setPrice(parentShopUnit.getChildrenOffersPriceSum() / parentShopUnit.getChildrenOffersCount());
             }
             repository.save(parentShopUnit);
             currentShopUnit = parentShopUnit;
@@ -179,9 +194,5 @@ public class ShopUnitService {
 
     private ShopUnit convertToShopUnit(ShopUnitImport shopUnitImport) {
         return mapper.map(shopUnitImport, ShopUnit.class);
-    }
-
-    private ShopUnitImport convertToShopUnitImport(ShopUnit shopUnit) {
-        return mapper.map(shopUnit, ShopUnitImport.class);
     }
 }
