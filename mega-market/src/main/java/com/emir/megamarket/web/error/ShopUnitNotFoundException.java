@@ -6,7 +6,7 @@ public class ShopUnitNotFoundException extends RuntimeException {
         super();
     }
 
-    public ShopUnitNotFoundException(String message) {
-        super(message);
+    public ShopUnitNotFoundException(String id) {
+        super("Shop unit with id: " + id + " not found");
     }
 }

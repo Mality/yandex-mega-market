@@ -1,39 +1,55 @@
 package com.emir.megamarket.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class ShopUnit {
 
     @Id
-//    @GeneratedValue(generator = "uuid")
-//    @GenericGenerator(name = "uuid", strategy = "uuid2")
+//    @GeneratedValue(generator = "UUID")
+//    @GenericGenerator(
+//            name = "UUID",
+//            strategy = "org.hibernate.id.UUIDGenerator"
+//    )
+    @Column(nullable = false)
     private String id;
 
+    @Column(nullable = false)
     private String name;
 
-    // example: 2022-05-28T21:12:01.000Z
+    @Column(nullable = false)
     private String date;
 
     private String parentId;
 
     private ShopUnitType type;
 
-    private int price;
+    private Integer price;
 
-//    @ManyToOne
-//    private ShopUnit parentShopUnit;
-//
-//    @OneToMany(mappedBy = "parentShopUnit")
-//    private List<ShopUnit> children;
+    @JsonIgnore
+    private Integer childrenOffersCount;
+
+    @JsonIgnore
+    private Integer childrenOffersSum;
+
+    @JsonIgnore
+    @ManyToOne
+    private ShopUnit parentShopUnit;
+
+    @OneToMany(mappedBy = "parentShopUnit", cascade = {CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    private List<ShopUnit> children = new ArrayList<>();
 
     public ShopUnit() {
     }
 
-    public ShopUnit(String name, String date, String parentId, ShopUnitType type, int price) {
+    public ShopUnit(String id, String name, String date, String parentId, ShopUnitType type, Integer price) {
+        this.id = id;
         this.name = name;
         this.date = date;
         this.parentId = parentId;
@@ -81,28 +97,72 @@ public class ShopUnit {
         this.type = type;
     }
 
-    public int getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
-//    public ShopUnit getParentShopUnit() {
-//        return parentShopUnit;
-//    }
-//
-//    public void setParentShopUnit(ShopUnit parentShopUnit) {
-//        this.parentShopUnit = parentShopUnit;
-//    }
-//
-//    public List<ShopUnit> getChildren() {
-//        return children;
-//    }
-//
-//    public void setChildren(List<ShopUnit> children) {
-//        this.children = children;
-//    }
+    public ShopUnit getParentShopUnit() {
+        return parentShopUnit;
+    }
+
+    public void setParentShopUnit(ShopUnit parentShopUnit) {
+        this.parentShopUnit = parentShopUnit;
+    }
+
+    public List<ShopUnit> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<ShopUnit> children) {
+        this.children = children;
+    }
+
+    public Integer getChildrenOffersCount() {
+        return childrenOffersCount;
+    }
+
+    public void setChildrenOffersCount(Integer childrenOffersCount) {
+        this.childrenOffersCount = childrenOffersCount;
+    }
+
+    public Integer getChildrenOffersSum() {
+        return childrenOffersSum;
+    }
+
+    public void setChildrenOffersSum(Integer childrenOffersSum) {
+        this.childrenOffersSum = childrenOffersSum;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ShopUnit shopUnit = (ShopUnit) o;
+        return Objects.equals(id, shopUnit.id) && Objects.equals(name, shopUnit.name) && Objects.equals(date, shopUnit.date) && Objects.equals(parentId, shopUnit.parentId) && type == shopUnit.type && Objects.equals(price, shopUnit.price) && Objects.equals(childrenOffersCount, shopUnit.childrenOffersCount) && Objects.equals(childrenOffersSum, shopUnit.childrenOffersSum) && Objects.equals(parentShopUnit, shopUnit.parentShopUnit) && Objects.equals(children, shopUnit.children);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, date, parentId, type, price, childrenOffersCount, childrenOffersSum, parentShopUnit, children);
+    }
+
+    @Override
+    public String toString() {
+        return "ShopUnit{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", date='" + date + '\'' +
+                ", parentId='" + parentId + '\'' +
+                ", type=" + type +
+                ", price=" + price +
+                ", childrenOffersCount=" + childrenOffersCount +
+                ", childrenOffersSum=" + childrenOffersSum +
+                ", children=" + children +
+                '}';
+    }
 }
 
