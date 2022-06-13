@@ -1,13 +1,21 @@
-package com.emir.megamarket.web.dto;
+package com.emir.megamarket.persistence.model;
 
-import com.emir.megamarket.persistence.model.ShopUnit;
-import com.emir.megamarket.persistence.model.ShopUnitType;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
+@Entity
 public class ShopUnitStatisticUnit {
+
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private String statisticId;
 
     private String id;
 
@@ -19,19 +27,9 @@ public class ShopUnitStatisticUnit {
 
     private Integer price;
 
-    // example: 2022-05-28T21:12:01.000Z
     private String date;
 
     public ShopUnitStatisticUnit() {
-    }
-
-    public ShopUnitStatisticUnit(String id, String name, String parentId, ShopUnitType type, Integer price, String date) {
-        this.id = id;
-        this.name = name;
-        this.parentId = parentId;
-        this.type = type;
-        this.price = price;
-        this.date = date;
     }
 
     public String getId() {

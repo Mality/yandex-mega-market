@@ -1,5 +1,7 @@
 package com.emir.megamarket.web.dto;
 
+import com.emir.megamarket.persistence.model.ShopUnitStatisticUnit;
+
 import java.util.List;
 
 public class ShopUnitStatisticResponse {

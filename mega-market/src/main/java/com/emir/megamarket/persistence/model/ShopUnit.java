@@ -1,11 +1,8 @@
 package com.emir.megamarket.persistence.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,7 +34,7 @@ public class ShopUnit {
     private int childrenOffersCount;
 
     @JsonIgnore
-    private int childrenOffersSum;
+    private int childrenOffersPriceSum;
 
     @JsonIgnore
     @ManyToOne
@@ -121,12 +118,12 @@ public class ShopUnit {
         this.childrenOffersCount = childrenOffersCount;
     }
 
-    public int getChildrenOffersSum() {
-        return childrenOffersSum;
+    public int getChildrenOffersPriceSum() {
+        return childrenOffersPriceSum;
     }
 
-    public void setChildrenOffersSum(int childrenOffersSum) {
-        this.childrenOffersSum = childrenOffersSum;
+    public void setChildrenOffersPriceSum(int childrenOffersSum) {
+        this.childrenOffersPriceSum = childrenOffersSum;
     }
 
     @Override
@@ -134,12 +131,12 @@ public class ShopUnit {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ShopUnit shopUnit = (ShopUnit) o;
-        return Objects.equals(id, shopUnit.id) && Objects.equals(name, shopUnit.name) && Objects.equals(date, shopUnit.date) && Objects.equals(parentId, shopUnit.parentId) && type == shopUnit.type && Objects.equals(price, shopUnit.price) && Objects.equals(childrenOffersCount, shopUnit.childrenOffersCount) && Objects.equals(childrenOffersSum, shopUnit.childrenOffersSum) && Objects.equals(parentShopUnit, shopUnit.parentShopUnit) && Objects.equals(children, shopUnit.children);
+        return Objects.equals(id, shopUnit.id) && Objects.equals(name, shopUnit.name) && Objects.equals(date, shopUnit.date) && Objects.equals(parentId, shopUnit.parentId) && type == shopUnit.type && Objects.equals(price, shopUnit.price) && Objects.equals(childrenOffersCount, shopUnit.childrenOffersCount) && Objects.equals(childrenOffersPriceSum, shopUnit.childrenOffersPriceSum) && Objects.equals(parentShopUnit, shopUnit.parentShopUnit) && Objects.equals(children, shopUnit.children);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, date, parentId, type, price, childrenOffersCount, childrenOffersSum, parentShopUnit, children);
+        return Objects.hash(id, name, date, parentId, type, price, childrenOffersCount, childrenOffersPriceSum, parentShopUnit, children);
     }
 
     @Override
@@ -152,7 +149,7 @@ public class ShopUnit {
                 ", type=" + type +
                 ", price=" + price +
                 ", childrenOffersCount=" + childrenOffersCount +
-                ", childrenOffersSum=" + childrenOffersSum +
+                ", childrenOffersSum=" + childrenOffersPriceSum +
                 ", children=" + children +
                 '}';
     }
