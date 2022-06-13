@@ -1,11 +1,6 @@
 package com.emir.megamarket.web.dto;
 
-import com.emir.megamarket.persistence.model.ShopUnit;
 import com.emir.megamarket.persistence.model.ShopUnitType;
-
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import java.util.List;
 
 public class ShopUnitStatisticUnit {
 

@@ -6,15 +6,15 @@ import javax.validation.constraints.NotNull;
 
 public class ShopUnitImport {
 
-    @NotNull
+    @NotNull(message = "ShopUnit id couldn't be null")
     private String id;
 
-    @NotNull
+    @NotNull(message = "ShopUnit name couldn't be null")
     private String name;
 
     private String parentId;
 
-    @NotNull
+    @NotNull(message = "ShopUnit type couldn't be null")
     private ShopUnitType type;
 
     private Integer price;

@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -49,15 +48,6 @@ public class ShopUnitService {
     }
 
     private void validateShopUnit(ShopUnit shopUnit) {
-        if (shopUnit.getId() == null) {
-            throw new ShopUnitValidationException("ShopUnit id couldn't be null");
-        }
-        if (shopUnit.getName() == null) {
-            throw new ShopUnitValidationException("ShopUnit name couldn't be null");
-        }
-        if (shopUnit.getType() == null) {
-            throw new ShopUnitValidationException("ShopUnit type couldn't be null");
-        }
         if (repository.findById(shopUnit.getId()).isPresent()) {
             throw new ShopUnitAlreadyExistException(shopUnit.getId());
         }
@@ -81,12 +71,6 @@ public class ShopUnitService {
     }
 
     private void validateShopUnitImportRequest(ShopUnitImportRequest shopUnitImportRequest) {
-        if (shopUnitImportRequest.getUpdateDate() == null) {
-            throw new ShopUnitImportRequestValidationException("ShopUnitImportRequest updateDate couldn't be null");
-        }
-        if (shopUnitImportRequest.getItems() == null) {
-            throw new ShopUnitImportRequestValidationException("ShopUnitImportRequest items couldn't be null");
-        }
         shopUnitImportRequest.getItems().forEach(item -> {
             if (item == null) {
                 throw new ShopUnitImportRequestValidationException("ShopUnitImportRequest item couldn't be null");
@@ -99,8 +83,7 @@ public class ShopUnitService {
         }
         try {
             OffsetDateTime.parse(shopUnitImportRequest.getUpdateDate());
-//            LocalDateTime.parse(shopUnitImportRequest.getUpdateDate());
-        } catch (DateTimeParseException e) {
+        } catch (DateTimeParseException ex) {
             throw new ShopUnitImportRequestValidationException("Illegal dateTime format");
         }
     }

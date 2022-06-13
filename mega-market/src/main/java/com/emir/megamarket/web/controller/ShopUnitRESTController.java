@@ -1,15 +1,15 @@
 package com.emir.megamarket.web.controller;
 
-import com.emir.megamarket.persistence.dao.ShopUnitRepository;
 import com.emir.megamarket.persistence.model.ShopUnit;
 import com.emir.megamarket.service.ShopUnitService;
-import com.emir.megamarket.web.dto.ShopUnitImport;
 import com.emir.megamarket.web.dto.ShopUnitImportRequest;
 import com.emir.megamarket.web.error.ImportValidationException;
 import com.emir.megamarket.web.error.ShopUnitNotFoundException;
+import com.emir.megamarket.web.validation.ValidDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.emir.megamarket.web.error.Error;
 
@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@Validated
 public class ShopUnitRESTController {
 
     Logger logger = LoggerFactory.getLogger(ShopUnitRESTController.class);
@@ -62,5 +63,10 @@ public class ShopUnitRESTController {
         } catch (ShopUnitNotFoundException ex) {
             return ResponseEntity.status(404).body(new Error(404, "Item not found"));
         }
+    }
+
+    @GetMapping("/sales")
+    public ResponseEntity<Object> sales(@RequestParam @ValidDate String date) {
+        return null;
     }
 }
