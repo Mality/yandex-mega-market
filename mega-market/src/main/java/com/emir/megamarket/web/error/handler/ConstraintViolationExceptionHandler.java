@@ -1,4 +1,4 @@
-package com.emir.megamarket.web;
+package com.emir.megamarket.web.error.handler;
 
 import com.emir.megamarket.web.error.Error;
 import org.springframework.http.ResponseEntity;

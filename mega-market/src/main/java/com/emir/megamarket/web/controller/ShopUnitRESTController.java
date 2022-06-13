@@ -67,6 +67,6 @@ public class ShopUnitRESTController {
 
     @GetMapping("/sales")
     public ResponseEntity<Object> sales(@RequestParam @ValidDate String date) {
-        return null;
+        return ResponseEntity.ok().body(shopUnitService.getSales(date));
     }
 }

@@ -5,6 +5,8 @@ import com.emir.megamarket.persistence.model.ShopUnit;
 import com.emir.megamarket.persistence.model.ShopUnitType;
 import com.emir.megamarket.web.dto.ShopUnitImport;
 import com.emir.megamarket.web.dto.ShopUnitImportRequest;
+import com.emir.megamarket.web.dto.ShopUnitStatisticResponse;
+import com.emir.megamarket.web.dto.ShopUnitStatisticUnit;
 import com.emir.megamarket.web.error.ShopUnitAlreadyExistException;
 import com.emir.megamarket.web.error.ShopUnitImportRequestValidationException;
 import com.emir.megamarket.web.error.ShopUnitNotFoundException;
@@ -15,8 +17,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ShopUnitService {
@@ -34,7 +41,7 @@ public class ShopUnitService {
     public void save(ShopUnitImportRequest shopUnitImportRequest) {
         validateShopUnitImportRequest(shopUnitImportRequest);
         for (ShopUnitImport shopUnitImport : shopUnitImportRequest.getItems()) {
-            ShopUnit shopUnit = convertToModel(shopUnitImport);
+            ShopUnit shopUnit = convertToShopUnit(shopUnitImport);
             shopUnit.setDate(shopUnitImportRequest.getUpdateDate());
             if (shopUnit.getParentId() != null) {
                 shopUnit.setParentShopUnit(get(shopUnit.getParentId()));
@@ -91,6 +98,7 @@ public class ShopUnitService {
     public ShopUnit get(String id) {
         ShopUnit shopUnit = repository.findById(id).orElseThrow(() -> new ShopUnitNotFoundException(id));
 
+        // it is bad
         Queue<ShopUnit> queue = new ArrayDeque<>();
         queue.add(shopUnit);
         while (!queue.isEmpty()) {
@@ -117,6 +125,20 @@ public class ShopUnitService {
         ShopUnit shopUnit = repository.findById(id).orElseThrow(() -> new ShopUnitNotFoundException(id));
         recalculatePriceWhenDeleted(shopUnit);
         repository.delete(shopUnit);
+    }
+
+    public ShopUnitStatisticResponse getSales(String date) {
+        OffsetDateTime currentDate = OffsetDateTime.parse(date);
+        OffsetDateTime dayAgoDate = currentDate.minus(1, ChronoUnit.DAYS);
+
+        String dateAfter = dayAgoDate.format(DateTimeFormatter.ISO_INSTANT);
+
+        logger.info("Get sales between " + dateAfter + " and " + date);
+        return new ShopUnitStatisticResponse(
+                repository.findAllByDateIsGreaterThanEqualAndDateLessThanEqual(dateAfter, date)
+                        .stream()
+                        .map(this::convertToStatisticUnit)
+                        .collect(Collectors.toList()));
     }
 
     private void recalculatePriceWhenDeleted(ShopUnit shopUnit) {
@@ -151,11 +173,15 @@ public class ShopUnitService {
         }
     }
 
-    private ShopUnit convertToModel(ShopUnitImport shopUnitImport) {
+    private ShopUnitStatisticUnit convertToStatisticUnit(ShopUnit shopUnit) {
+        return mapper.map(shopUnit, ShopUnitStatisticUnit.class);
+    }
+
+    private ShopUnit convertToShopUnit(ShopUnitImport shopUnitImport) {
         return mapper.map(shopUnitImport, ShopUnit.class);
     }
 
-    private ShopUnitImport convertToDto(ShopUnit shopUnit) {
+    private ShopUnitImport convertToShopUnitImport(ShopUnit shopUnit) {
         return mapper.map(shopUnit, ShopUnitImport.class);
     }
 }
