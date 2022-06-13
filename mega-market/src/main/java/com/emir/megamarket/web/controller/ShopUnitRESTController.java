@@ -41,7 +41,7 @@ public class ShopUnitRESTController {
             return ResponseEntity.ok().build();
         } catch (ImportValidationException ex) {
             logger.info("Import validation failed: " + ex.getMessage());
-            return ResponseEntity.status(400).body(new Error(400, "Validation Failed"));
+            return ResponseEntity.status(200).body(new Error(200, "Validation Failed"));
         }
     }
 

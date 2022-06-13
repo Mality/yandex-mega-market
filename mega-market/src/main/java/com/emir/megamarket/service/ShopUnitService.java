@@ -15,10 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class ShopUnitService {
@@ -99,14 +98,31 @@ public class ShopUnitService {
             throw new ShopUnitImportRequestValidationException("ShopUnits should have unique ids");
         }
         try {
-            LocalDateTime.parse(shopUnitImportRequest.getUpdateDate());
+            OffsetDateTime.parse(shopUnitImportRequest.getUpdateDate());
+//            LocalDateTime.parse(shopUnitImportRequest.getUpdateDate());
         } catch (DateTimeParseException e) {
             throw new ShopUnitImportRequestValidationException("Illegal dateTime format");
         }
     }
 
     public ShopUnit get(String id) {
-        return repository.findById(id).orElseThrow(() -> new ShopUnitNotFoundException(id));
+        ShopUnit shopUnit = repository.findById(id).orElseThrow(() -> new ShopUnitNotFoundException(id));
+
+        Queue<ShopUnit> queue = new ArrayDeque<>();
+        queue.add(shopUnit);
+        while (!queue.isEmpty()) {
+            ShopUnit curShopUnit = queue.peek();
+            queue.remove();
+            if (curShopUnit.getChildren() != null) {
+                if (curShopUnit.getChildren().isEmpty()) {
+                    curShopUnit.setChildren(null);
+                } else {
+                    queue.addAll(curShopUnit.getChildren());
+                }
+            }
+        }
+
+        return shopUnit;
     }
 
     // for testing

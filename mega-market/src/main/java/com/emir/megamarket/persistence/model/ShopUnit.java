@@ -2,6 +2,7 @@ package com.emir.megamarket.persistence.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -43,18 +44,9 @@ public class ShopUnit {
     private ShopUnit parentShopUnit;
 
     @OneToMany(mappedBy = "parentShopUnit", cascade = {CascadeType.REMOVE}, fetch = FetchType.EAGER)
-    private List<ShopUnit> children = new ArrayList<>();
+    private List<ShopUnit> children;
 
     public ShopUnit() {
-    }
-
-    public ShopUnit(String id, String name, String date, String parentId, ShopUnitType type, Integer price) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.parentId = parentId;
-        this.type = type;
-        this.price = price;
     }
 
     public String getId() {

@@ -6,7 +6,6 @@ import com.emir.megamarket.persistence.model.ShopUnitType;
 import com.emir.megamarket.web.dto.ShopUnitImport;
 import com.emir.megamarket.web.dto.ShopUnitImportRequest;
 import com.emir.megamarket.web.error.ShopUnitNotFoundException;
-import org.apache.tomcat.jni.Local;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,14 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @TestPropertySource(
-        locations = "classpath:application-integrationtest.properties")
+        locations = "classpath:application-test.properties")
 class ShopUnitServiceTest {
 
     @Autowired
@@ -47,7 +45,7 @@ class ShopUnitServiceTest {
         offer1.setParentId(category2.getId());
         offer2.setParentId(category2.getId());
 
-        shopUnitService.save(new ShopUnitImportRequest(List.of(category1, category2, offer1, offer2), LocalDateTime.now().toString()));
+        shopUnitService.save(new ShopUnitImportRequest(List.of(category1, category2, offer1, offer2), "2022-05-28T21:12:01.000Z"));
 
         System.out.println(shopUnitService.get(category2.getId()));
 
@@ -79,7 +77,7 @@ class ShopUnitServiceTest {
         offer1.setParentId(category1.getId());
         offer2.setParentId(category2.getId());
 
-        shopUnitService.save(new ShopUnitImportRequest(List.of(category1, category2, offer1, offer2), LocalDateTime.now().toString()));
+        shopUnitService.save(new ShopUnitImportRequest(List.of(category1, category2, offer1, offer2), "2022-05-28T21:12:01.000Z"));
 
         ShopUnit resultCategory1 = shopUnitRepository.findById(category1.getId()).orElseThrow(() -> new ShopUnitNotFoundException(category1.getId()));
         ShopUnit resultCategory2 = shopUnitRepository.findById(category2.getId()).orElseThrow(() -> new ShopUnitNotFoundException(category2.getId()));
