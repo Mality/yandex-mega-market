@@ -2,14 +2,19 @@ package com.emir.megamarket.web.dto;
 
 import com.emir.megamarket.persistence.model.ShopUnitType;
 
+import javax.validation.constraints.NotNull;
+
 public class ShopUnitImport {
 
+    @NotNull
     private String id;
 
+    @NotNull
     private String name;
 
     private String parentId;
 
+    @NotNull
     private ShopUnitType type;
 
     private Integer price;

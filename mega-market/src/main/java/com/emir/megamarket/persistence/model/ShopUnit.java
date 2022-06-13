@@ -33,10 +33,10 @@ public class ShopUnit {
     private Integer price;
 
     @JsonIgnore
-    private Integer childrenOffersCount;
+    private int childrenOffersCount;
 
     @JsonIgnore
-    private Integer childrenOffersSum;
+    private int childrenOffersSum;
 
     @JsonIgnore
     @ManyToOne
@@ -121,19 +121,19 @@ public class ShopUnit {
         this.children = children;
     }
 
-    public Integer getChildrenOffersCount() {
+    public int getChildrenOffersCount() {
         return childrenOffersCount;
     }
 
-    public void setChildrenOffersCount(Integer childrenOffersCount) {
+    public void setChildrenOffersCount(int childrenOffersCount) {
         this.childrenOffersCount = childrenOffersCount;
     }
 
-    public Integer getChildrenOffersSum() {
+    public int getChildrenOffersSum() {
         return childrenOffersSum;
     }
 
-    public void setChildrenOffersSum(Integer childrenOffersSum) {
+    public void setChildrenOffersSum(int childrenOffersSum) {
         this.childrenOffersSum = childrenOffersSum;
     }
 
