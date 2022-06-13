@@ -5,6 +5,7 @@ import com.emir.megamarket.persistence.model.ShopUnit;
 import com.emir.megamarket.service.ShopUnitService;
 import com.emir.megamarket.web.dto.ShopUnitImport;
 import com.emir.megamarket.web.dto.ShopUnitImportRequest;
+import com.emir.megamarket.web.error.ImportValidationException;
 import com.emir.megamarket.web.error.ShopUnitNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +33,14 @@ public class ShopUnitRESTController {
     }
 
     @PostMapping("/imports")
-    public void importShopUnit(@RequestBody ShopUnitImportRequest shopUnitImportRequest) {
-        shopUnitService.save(shopUnitImportRequest);
-
-        logger.info("Saved " + shopUnitImportRequest.getItems().size() + " items at " + shopUnitImportRequest.getUpdateDate());
+    public ResponseEntity<Error> importShopUnit(@RequestBody ShopUnitImportRequest shopUnitImportRequest) {
+        try {
+            shopUnitService.save(shopUnitImportRequest);
+            logger.info("Saved " + shopUnitImportRequest.getItems().size() + " items at " + shopUnitImportRequest.getUpdateDate());
+            return ResponseEntity.ok().build();
+        } catch (ImportValidationException ex) {
+            return ResponseEntity.status(400).body(new Error(400, "Validation Failed"));
+        }
     }
 
     @DeleteMapping("/delete/{id}")

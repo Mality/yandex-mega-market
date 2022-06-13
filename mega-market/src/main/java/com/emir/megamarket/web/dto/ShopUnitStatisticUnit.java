@@ -17,7 +17,7 @@ public class ShopUnitStatisticUnit {
 
     private ShopUnitType type;
 
-    private int price;
+    private Integer price;
 
     // example: 2022-05-28T21:12:01.000Z
     private String date;
@@ -25,7 +25,7 @@ public class ShopUnitStatisticUnit {
     public ShopUnitStatisticUnit() {
     }
 
-    public ShopUnitStatisticUnit(String id, String name, String parentId, ShopUnitType type, int price, String date) {
+    public ShopUnitStatisticUnit(String id, String name, String parentId, ShopUnitType type, Integer price, String date) {
         this.id = id;
         this.name = name;
         this.parentId = parentId;
@@ -66,11 +66,11 @@ public class ShopUnitStatisticUnit {
         this.type = type;
     }
 
-    public int getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 

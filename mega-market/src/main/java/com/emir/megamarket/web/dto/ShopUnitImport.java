@@ -12,7 +12,7 @@ public class ShopUnitImport {
 
     private ShopUnitType type;
 
-    private int price;
+    private Integer price;
 
     public ShopUnitImport() {
     }
@@ -49,11 +49,11 @@ public class ShopUnitImport {
         this.type = type;
     }
 
-    public int getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 }
