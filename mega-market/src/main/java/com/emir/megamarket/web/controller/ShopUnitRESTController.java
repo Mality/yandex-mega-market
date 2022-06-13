@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.emir.megamarket.web.error.Error;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -33,13 +34,14 @@ public class ShopUnitRESTController {
     }
 
     @PostMapping("/imports")
-    public ResponseEntity<Error> importShopUnit(@RequestBody ShopUnitImportRequest shopUnitImportRequest) {
+    public ResponseEntity<Error> importShopUnit(@RequestBody @Valid ShopUnitImportRequest shopUnitImportRequest) {
         try {
             shopUnitService.save(shopUnitImportRequest);
             logger.info("Saved " + shopUnitImportRequest.getItems().size() + " items at " + shopUnitImportRequest.getUpdateDate());
             return ResponseEntity.ok().build();
         } catch (ImportValidationException ex) {
-            return ResponseEntity.status(400).body(new Error(400, "Validation Failed"));
+            logger.info("Import validation failed: " + ex.getMessage());
+            return ResponseEntity.status(200).body(new Error(200, "Validation Failed"));
         }
     }
 

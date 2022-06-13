@@ -2,6 +2,7 @@ package com.emir.megamarket.persistence.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -33,28 +34,19 @@ public class ShopUnit {
     private Integer price;
 
     @JsonIgnore
-    private Integer childrenOffersCount;
+    private int childrenOffersCount;
 
     @JsonIgnore
-    private Integer childrenOffersSum;
+    private int childrenOffersSum;
 
     @JsonIgnore
     @ManyToOne
     private ShopUnit parentShopUnit;
 
     @OneToMany(mappedBy = "parentShopUnit", cascade = {CascadeType.REMOVE}, fetch = FetchType.EAGER)
-    private List<ShopUnit> children = new ArrayList<>();
+    private List<ShopUnit> children;
 
     public ShopUnit() {
-    }
-
-    public ShopUnit(String id, String name, String date, String parentId, ShopUnitType type, Integer price) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.parentId = parentId;
-        this.type = type;
-        this.price = price;
     }
 
     public String getId() {
@@ -121,19 +113,19 @@ public class ShopUnit {
         this.children = children;
     }
 
-    public Integer getChildrenOffersCount() {
+    public int getChildrenOffersCount() {
         return childrenOffersCount;
     }
 
-    public void setChildrenOffersCount(Integer childrenOffersCount) {
+    public void setChildrenOffersCount(int childrenOffersCount) {
         this.childrenOffersCount = childrenOffersCount;
     }
 
-    public Integer getChildrenOffersSum() {
+    public int getChildrenOffersSum() {
         return childrenOffersSum;
     }
 
-    public void setChildrenOffersSum(Integer childrenOffersSum) {
+    public void setChildrenOffersSum(int childrenOffersSum) {
         this.childrenOffersSum = childrenOffersSum;
     }
 

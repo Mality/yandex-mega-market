@@ -14,9 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 
 @Service
 public class ShopUnitService {
@@ -40,7 +41,7 @@ public class ShopUnitService {
                 shopUnit.setParentShopUnit(get(shopUnit.getParentId()));
             }
             if (shopUnit.getType() == ShopUnitType.OFFER) {
-                updateParentCategories(shopUnit, shopUnitImportRequest.getUpdateDate());
+                updateParentCategories(shopUnit, shopUnitImportRequest.getUpdateDate(), true);
             }
             validateShopUnit(shopUnit);
             repository.save(shopUnit);
@@ -48,6 +49,15 @@ public class ShopUnitService {
     }
 
     private void validateShopUnit(ShopUnit shopUnit) {
+        if (shopUnit.getId() == null) {
+            throw new ShopUnitValidationException("ShopUnit id couldn't be null");
+        }
+        if (shopUnit.getName() == null) {
+            throw new ShopUnitValidationException("ShopUnit name couldn't be null");
+        }
+        if (shopUnit.getType() == null) {
+            throw new ShopUnitValidationException("ShopUnit type couldn't be null");
+        }
         if (repository.findById(shopUnit.getId()).isPresent()) {
             throw new ShopUnitAlreadyExistException(shopUnit.getId());
         }
@@ -71,28 +81,48 @@ public class ShopUnitService {
     }
 
     private void validateShopUnitImportRequest(ShopUnitImportRequest shopUnitImportRequest) {
+        if (shopUnitImportRequest.getUpdateDate() == null) {
+            throw new ShopUnitImportRequestValidationException("ShopUnitImportRequest updateDate couldn't be null");
+        }
+        if (shopUnitImportRequest.getItems() == null) {
+            throw new ShopUnitImportRequestValidationException("ShopUnitImportRequest items couldn't be null");
+        }
+        shopUnitImportRequest.getItems().forEach(item -> {
+            if (item == null) {
+                throw new ShopUnitImportRequestValidationException("ShopUnitImportRequest item couldn't be null");
+            }
+        });
         Set<String> itemIds = new HashSet<>();
         shopUnitImportRequest.getItems().forEach(item -> itemIds.add(item.getId()));
         if (itemIds.size() != shopUnitImportRequest.getItems().size()) {
             throw new ShopUnitImportRequestValidationException("ShopUnits should have unique ids");
         }
-    }
-
-    private void updateParentCategories(ShopUnit shopUnit, String updateDate) {
-        ShopUnit currentShopUnit = shopUnit;
-        while (currentShopUnit.getParentShopUnit() != null) {
-            ShopUnit parentShopUnit = currentShopUnit.getParentShopUnit();
-            parentShopUnit.setChildrenOffersCount(parentShopUnit.getChildrenOffersCount() + 1);
-            parentShopUnit.setChildrenOffersSum(parentShopUnit.getChildrenOffersSum() + shopUnit.getPrice());
-            parentShopUnit.setPrice(parentShopUnit.getChildrenOffersSum() / parentShopUnit.getChildrenOffersCount());
-            parentShopUnit.setDate(updateDate);
-            repository.save(parentShopUnit);
-            currentShopUnit = parentShopUnit;
+        try {
+            OffsetDateTime.parse(shopUnitImportRequest.getUpdateDate());
+//            LocalDateTime.parse(shopUnitImportRequest.getUpdateDate());
+        } catch (DateTimeParseException e) {
+            throw new ShopUnitImportRequestValidationException("Illegal dateTime format");
         }
     }
 
     public ShopUnit get(String id) {
-        return repository.findById(id).orElseThrow(() -> new ShopUnitNotFoundException(id));
+        ShopUnit shopUnit = repository.findById(id).orElseThrow(() -> new ShopUnitNotFoundException(id));
+
+        Queue<ShopUnit> queue = new ArrayDeque<>();
+        queue.add(shopUnit);
+        while (!queue.isEmpty()) {
+            ShopUnit curShopUnit = queue.peek();
+            queue.remove();
+            if (curShopUnit.getChildren() != null) {
+                if (curShopUnit.getChildren().isEmpty()) {
+                    curShopUnit.setChildren(null);
+                } else {
+                    queue.addAll(curShopUnit.getChildren());
+                }
+            }
+        }
+
+        return shopUnit;
     }
 
     // for testing
@@ -102,7 +132,40 @@ public class ShopUnitService {
 
     public void delete(String id) {
         ShopUnit shopUnit = repository.findById(id).orElseThrow(() -> new ShopUnitNotFoundException(id));
+        recalculatePriceWhenDeleted(shopUnit);
         repository.delete(shopUnit);
+    }
+
+    private void recalculatePriceWhenDeleted(ShopUnit shopUnit) {
+        if (shopUnit.getType() == ShopUnitType.OFFER) {
+            updateParentCategories(shopUnit, null, false);
+            return;
+        }
+        for (ShopUnit item : shopUnit.getChildren()) {
+            recalculatePriceWhenDeleted(item);
+        }
+    }
+
+    private void updateParentCategories(ShopUnit shopUnit, String updateDate, boolean add) {
+        ShopUnit currentShopUnit = shopUnit;
+        while (currentShopUnit.getParentShopUnit() != null) {
+            ShopUnit parentShopUnit = currentShopUnit.getParentShopUnit();
+            if (add) {
+                parentShopUnit.setChildrenOffersCount(parentShopUnit.getChildrenOffersCount() + 1);
+                parentShopUnit.setChildrenOffersSum(parentShopUnit.getChildrenOffersSum() + shopUnit.getPrice());
+                parentShopUnit.setDate(updateDate);
+            } else {
+                parentShopUnit.setChildrenOffersCount(parentShopUnit.getChildrenOffersCount() - 1);
+                parentShopUnit.setChildrenOffersSum(parentShopUnit.getChildrenOffersSum() - shopUnit.getPrice());
+            }
+            if (parentShopUnit.getChildrenOffersCount() == 0) {
+                parentShopUnit.setPrice(null);
+            } else {
+                parentShopUnit.setPrice(parentShopUnit.getChildrenOffersSum() / parentShopUnit.getChildrenOffersCount());
+            }
+            repository.save(parentShopUnit);
+            currentShopUnit = parentShopUnit;
+        }
     }
 
     private ShopUnit convertToModel(ShopUnitImport shopUnitImport) {

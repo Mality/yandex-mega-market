@@ -1,11 +1,14 @@
 package com.emir.megamarket.web.dto;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public class ShopUnitImportRequest {
 
+    @NotNull
     private List<ShopUnitImport> items;
 
+    @NotNull
     private String updateDate;
 
     public ShopUnitImportRequest() {
