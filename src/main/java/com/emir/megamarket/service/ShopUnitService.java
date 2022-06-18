@@ -99,24 +99,7 @@ public class ShopUnitService {
     }
 
     public ShopUnit get(String id) {
-        ShopUnit shopUnit = repository.findById(id).orElseThrow(() -> new ShopUnitNotFoundException(id));
-
-        // it is bad
-        Queue<ShopUnit> queue = new ArrayDeque<>();
-        queue.add(shopUnit);
-        while (!queue.isEmpty()) {
-            ShopUnit curShopUnit = queue.peek();
-            queue.remove();
-            if (curShopUnit.getChildren() != null) {
-                if (curShopUnit.getChildren().isEmpty()) {
-                    curShopUnit.setChildren(null);
-                } else {
-                    queue.addAll(curShopUnit.getChildren());
-                }
-            }
-        }
-
-        return shopUnit;
+        return repository.findById(id).orElseThrow(() -> new ShopUnitNotFoundException(id));
     }
 
     // for testing

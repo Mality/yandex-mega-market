@@ -36,7 +36,7 @@ public class ShopUnit {
     private ShopUnit parentShopUnit;
 
     @OneToMany(mappedBy = "parentShopUnit", cascade = {CascadeType.REMOVE}, fetch = FetchType.EAGER)
-    private List<ShopUnit> children;
+    private List<ShopUnit> children = null;
 
     public ShopUnit() {
     }
@@ -98,6 +98,7 @@ public class ShopUnit {
     }
 
     public List<ShopUnit> getChildren() {
+        if (children != null && children.isEmpty()) return null;
         return children;
     }
 
