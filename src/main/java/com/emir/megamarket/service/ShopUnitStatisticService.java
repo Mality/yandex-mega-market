@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ShopUnitStatisticService {
 
-    private ShopUnitStatisticRepository statisticRepository;
+    private final ShopUnitStatisticRepository statisticRepository;
 
     private final ModelMapper mapper = new ModelMapper();
 

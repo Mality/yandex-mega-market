@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 @TestPropertySource(
         locations = "classpath:application-test.properties")
-class ShopUnitServiceTest {
+class ShopUnitServiceIntegrationTest {
 
     @Autowired
     private ShopUnitRepository shopUnitRepository;

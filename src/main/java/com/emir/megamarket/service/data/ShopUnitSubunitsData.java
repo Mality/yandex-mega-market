@@ -1,4 +1,4 @@
-package com.emir.megamarket.service;
+package com.emir.megamarket.service.data;
 
 public class ShopUnitSubunitsData {
 

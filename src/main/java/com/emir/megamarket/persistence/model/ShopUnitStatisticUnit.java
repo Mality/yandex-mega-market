@@ -32,6 +32,14 @@ public class ShopUnitStatisticUnit {
     public ShopUnitStatisticUnit() {
     }
 
+    public String getStatisticId() {
+        return statisticId;
+    }
+
+    public void setStatisticId(String statisticId) {
+        this.statisticId = statisticId;
+    }
+
     public String getId() {
         return id;
     }

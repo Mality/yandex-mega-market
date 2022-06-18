@@ -3,6 +3,7 @@ package com.emir.megamarket.service;
 import com.emir.megamarket.persistence.dao.ShopUnitRepository;
 import com.emir.megamarket.persistence.model.ShopUnit;
 import com.emir.megamarket.persistence.model.ShopUnitType;
+import com.emir.megamarket.service.data.ShopUnitSubunitsData;
 import com.emir.megamarket.web.dto.ShopUnitImport;
 import com.emir.megamarket.web.dto.ShopUnitImportRequest;
 import com.emir.megamarket.web.dto.ShopUnitStatisticResponse;
@@ -98,24 +99,7 @@ public class ShopUnitService {
     }
 
     public ShopUnit get(String id) {
-        ShopUnit shopUnit = repository.findById(id).orElseThrow(() -> new ShopUnitNotFoundException(id));
-
-        // it is bad
-        Queue<ShopUnit> queue = new ArrayDeque<>();
-        queue.add(shopUnit);
-        while (!queue.isEmpty()) {
-            ShopUnit curShopUnit = queue.peek();
-            queue.remove();
-            if (curShopUnit.getChildren() != null) {
-                if (curShopUnit.getChildren().isEmpty()) {
-                    curShopUnit.setChildren(null);
-                } else {
-                    queue.addAll(curShopUnit.getChildren());
-                }
-            }
-        }
-
-        return shopUnit;
+        return repository.findById(id).orElseThrow(() -> new ShopUnitNotFoundException(id));
     }
 
     // for testing
