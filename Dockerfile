@@ -8,7 +8,7 @@ ADD ./src src/
 RUN mvn clean package -DskipTests
 
 # Second stage: minimal runtime environment
-FROM openjdk:11-jre-alpine
+FROM openjdk:11-jre-slim
 
 # copy jar from the first stage
 COPY --from=builder target/mega-market-0.0.1-SNAPSHOT.jar mega-market-0.0.1-SNAPSHOT.jar
