@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -47,7 +46,7 @@ class ShopUnitServiceIntegrationTest {
         offer1.setParentId(category2.getId());
         offer2.setParentId(category2.getId());
 
-        shopUnitService.save(new ShopUnitImportRequest(Arrays.asList(category1, category2, offer1, offer2), "2022-05-28T21:12:01.000Z"));
+        shopUnitService.save(new ShopUnitImportRequest(List.of(category1, category2, offer1, offer2), "2022-05-28T21:12:01.000Z"));
 
         System.out.println(shopUnitService.get(category2.getId()));
 
@@ -79,7 +78,7 @@ class ShopUnitServiceIntegrationTest {
         offer1.setParentId(category1.getId());
         offer2.setParentId(category2.getId());
 
-        shopUnitService.save(new ShopUnitImportRequest(Arrays.asList(category1, category2, offer1, offer2), "2022-05-28T21:12:01.000Z"));
+        shopUnitService.save(new ShopUnitImportRequest(List.of(category1, category2, offer1, offer2), "2022-05-28T21:12:01.000Z"));
 
         ShopUnit resultCategory1 = shopUnitRepository.findById(category1.getId()).orElseThrow(() -> new ShopUnitNotFoundException(category1.getId()));
         ShopUnit resultCategory2 = shopUnitRepository.findById(category2.getId()).orElseThrow(() -> new ShopUnitNotFoundException(category2.getId()));
