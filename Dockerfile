@@ -1,4 +1,4 @@
-FROM maven:3.5.0-jdk-8-alpine AS builder
+FROM maven:3.8.6-jdk-11 AS builder
 
 # add pom.xml and source code
 ADD ./pom.xml pom.xml
@@ -8,7 +8,7 @@ ADD ./src src/
 RUN mvn clean package -DskipTests
 
 # Second stage: minimal runtime environment
-FROM openjdk:8-jre-alpine
+FROM openjdk:11-jre-alpine
 
 # copy jar from the first stage
 COPY --from=builder target/mega-market-0.0.1-SNAPSHOT.jar mega-market-0.0.1-SNAPSHOT.jar
