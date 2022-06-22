@@ -41,6 +41,8 @@ public class ShopUnit {
     public ShopUnit() {
     }
 
+
+
     public String getId() {
         return id;
     }

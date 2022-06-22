@@ -22,6 +22,14 @@ public class ShopUnitImport {
     public ShopUnitImport() {
     }
 
+    public ShopUnitImport(String id, String name, String parentId, ShopUnitType type, Integer price) {
+        this.id = id;
+        this.name = name;
+        this.parentId = parentId;
+        this.type = type;
+        this.price = price;
+    }
+
     public String getId() {
         return id;
     }
