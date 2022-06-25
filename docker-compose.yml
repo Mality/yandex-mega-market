@@ -8,16 +8,16 @@ services:
     container_name: app
     restart: unless-stopped
     ports:
-      - 80:80
+      - '80:80'
     depends_on:
-      - db
+      - postgres
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/compose-postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=123
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
           
-  db:
+  postgres:
     image: 'postgres:13.1-alpine'
     container_name: db
     restart: unless-stopped

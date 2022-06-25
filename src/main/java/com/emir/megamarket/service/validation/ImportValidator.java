@@ -7,12 +7,14 @@ import com.emir.megamarket.web.dto.ShopUnitImportRequest;
 import com.emir.megamarket.web.error.ShopUnitAlreadyExistException;
 import com.emir.megamarket.web.error.ShopUnitImportRequestValidationException;
 import com.emir.megamarket.web.error.ShopUnitValidationException;
+import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.HashSet;
 import java.util.Set;
 
+@Component
 public class ImportValidator {
 
     private final ShopUnitRepository repository;
