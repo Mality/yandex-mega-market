@@ -38,9 +38,6 @@ public class ShopUnit {
     @OneToMany(mappedBy = "parentShopUnit", cascade = {CascadeType.REMOVE}, fetch = FetchType.EAGER)
     private List<ShopUnit> children = null;
 
-    public ShopUnit() {
-    }
-
     public String getId() {
         return id;
     }
@@ -150,4 +147,3 @@ public class ShopUnit {
                 '}';
     }
 }
-

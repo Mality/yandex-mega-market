@@ -17,7 +17,7 @@ import java.util.List;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class ShopUnitServiceImplTest {
+class ShopUnitServiceImplTest {
 
     @Mock
     private ShopUnitStatisticService statisticService;
@@ -32,7 +32,7 @@ public class ShopUnitServiceImplTest {
     private ShopUnitServiceImpl shopUnitService;
 
     @Test
-    public void givenShopUnitImportRequest_whenSave_thenSaveToRepositoryCorrectShopUnit() {
+    void givenShopUnitImportRequest_whenSave_thenSaveToRepositoryCorrectShopUnit() {
         ShopUnitImportRequest importRequest = new ShopUnitImportRequest();
         ShopUnitImport shopUnitImport = new ShopUnitImport();
         shopUnitImport.setId("73bc3b36-02d1-4245-ab35-3106c9ee1c65");

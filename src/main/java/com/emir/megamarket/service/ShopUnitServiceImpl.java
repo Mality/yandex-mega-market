@@ -79,7 +79,7 @@ public class ShopUnitServiceImpl implements ShopUnitService {
 
         String startDate = dayAgoDate.format(DateTimeFormatter.ISO_INSTANT);
 
-        logger.info("Get sales between " + startDate + " and " + date);
+        logger.info("Get sales between {} and {}", startDate, date);
         return new ShopUnitStatisticResponse(
                 repository.findAllByDateIsGreaterThanEqualAndDateLessThanEqual(startDate, date)
                         .stream()
