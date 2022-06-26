@@ -8,22 +8,28 @@ services:
     container_name: app
     restart: unless-stopped
     ports:
-      - '80:80'
+      - '80:8080'
     depends_on:
       - postgres
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/compose-postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mega-market-db
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=123
+      - SPRING_DATASOURCE_PASSWORD=Fv3MvCSyJ9
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
           
   postgres:
     image: 'postgres:13.1-alpine'
     container_name: db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mega-market-db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
     ports:
       - '5432:5432'
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123
-      - POSTGRES_DB=compose-postgres
+      - POSTGRES_PASSWORD=Fv3MvCSyJ9
+      - POSTGRES_DB=mega-market-db
