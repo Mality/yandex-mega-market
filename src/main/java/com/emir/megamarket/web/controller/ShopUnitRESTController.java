@@ -30,7 +30,7 @@ public class ShopUnitRESTController {
     @PostMapping("/imports")
     public ResponseEntity<Object> importShopUnit(@RequestBody @Valid ShopUnitImportRequest shopUnitImportRequest) {
         shopUnitService.save(shopUnitImportRequest);
-        logger.info("Saved " + shopUnitImportRequest.getItems().size() + " items at " + shopUnitImportRequest.getUpdateDate());
+        logger.info("Saved {} items at {}", shopUnitImportRequest.getItems().size(), shopUnitImportRequest.getUpdateDate());
         return ResponseEntity.ok().build();
     }
 

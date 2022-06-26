@@ -23,7 +23,7 @@ import java.util.List;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ShopUnitRESTControllerTest {
+class ShopUnitRESTControllerTest {
 
     private static final String NOT_FOUND_ERROR =
             "{\"code\":404,\"message\":\"Item not found\"}";
@@ -33,11 +33,11 @@ public class ShopUnitRESTControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private ShopUnitImportRequest shopUnitImportRequest;
+    private final ShopUnitImportRequest shopUnitImportRequest;
 
-    private ShopUnit shopUnit;
+    private final ShopUnit shopUnit;
 
-    public ShopUnitRESTControllerTest() {
+    ShopUnitRESTControllerTest() {
         shopUnitImportRequest = new ShopUnitImportRequest();
         ShopUnitImport shopUnitImport = new ShopUnitImport();
         shopUnitImport.setId("3fa85f64-5717-4562-b3fc-2c963f66a444");
@@ -57,35 +57,35 @@ public class ShopUnitRESTControllerTest {
 
     @Test
     @Order(1)
-    public void givenNotExistingUnitId_whenGet_thenReturnError404() throws Exception {
+    void givenNotExistingUnitId_whenGet_thenReturnError404() throws Exception {
         String id = "3fa85f64-5717-4562-b3fc-2c963f66a444";
         mockMvc.perform(get("/nodes/" + id)).andExpect(status().isNotFound()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(content().string(NOT_FOUND_ERROR));
     }
 
     @Test
     @Order(2)
-    public void givenShopUnitImportRequest_whenImportShopUnit_thenReturnStatus200() throws Exception {
+    void givenShopUnitImportRequest_whenImportShopUnit_thenReturnStatus200() throws Exception {
         String requestJson = objectMapper.writeValueAsString(shopUnitImportRequest);
         mockMvc.perform(post("/imports").contentType(MediaType.APPLICATION_JSON).content(requestJson)).andDo(print()).andExpect(status().isOk());
     }
 
     @Test
     @Order(3)
-    public void givenUnitId_whenGet_thenReturnShopUnit() throws Exception {
+    void givenUnitId_whenGet_thenReturnShopUnit() throws Exception {
         String expectShopUnit = objectMapper.writeValueAsString(shopUnit);
         mockMvc.perform(get("/nodes/" + shopUnit.getId())).andExpect(status().isOk()).andExpect(content().string(expectShopUnit));
     }
 
     @Test
     @Order(4)
-    public void givenUnitId_whenDelete_thenReturnStatusOk() throws Exception {
+    void givenUnitId_whenDelete_thenReturnStatusOk() throws Exception {
         String id = "3fa85f64-5717-4562-b3fc-2c963f66a444";
         mockMvc.perform(delete("/delete/" + id)).andExpect(status().isOk());
     }
 
     @Test
     @Order(5)
-    public void givenUnitId_whenGetDeletedShopUnit_thenReturnStatusNotFoundAndError() throws Exception {
+    void givenUnitId_whenGetDeletedShopUnit_thenReturnStatusNotFoundAndError() throws Exception {
         String id = "3fa85f64-5717-4562-b3fc-2c963f66a444";
         mockMvc.perform(get("/nodes/" + id)).andExpect(status().isNotFound()).andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(content().string(NOT_FOUND_ERROR));
     }

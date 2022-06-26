@@ -36,7 +36,7 @@ class ShopUnitServiceIntegrationTest {
 
     @DisplayName("JUnit test for deleting shopUnit")
     @Test
-    public void givenShopUnits_whenDeleteParent_thenChildrenShouldBeRemoved() {
+    void givenShopUnits_whenDeleteParent_thenChildrenShouldBeRemoved() {
         ShopUnitImport category1 = getCategory1();
         ShopUnitImport category2 = getCategory2();
         ShopUnitImport offer1 = getOffer1();
@@ -54,21 +54,24 @@ class ShopUnitServiceIntegrationTest {
 
         shopUnitRepository.findById(category1.getId()).orElseThrow(() -> new ShopUnitNotFoundException(category1.getId()));
 
-        assertThatThrownBy(() -> shopUnitService.get(category2.getId()))
+        String category2Id = category2.getId();
+        assertThatThrownBy(() -> shopUnitService.get(category2Id))
                 .isInstanceOf(ShopUnitNotFoundException.class)
                 .hasMessage("Shop unit with id: " + category2.getId() + " not found");
 
-        assertThatThrownBy(() -> shopUnitService.get(offer1.getId()))
+        String offer1Id = offer1.getId();
+        assertThatThrownBy(() -> shopUnitService.get(offer1Id))
                 .isInstanceOf(ShopUnitNotFoundException.class)
                 .hasMessage("Shop unit with id: " + offer1.getId() + " not found");
 
-        assertThatThrownBy(() -> shopUnitService.get(offer2.getId()))
+        String offer2Id = offer2.getId();
+        assertThatThrownBy(() -> shopUnitService.get(offer2Id))
                 .isInstanceOf(ShopUnitNotFoundException.class)
                 .hasMessage("Shop unit with id: " + offer2.getId() + " not found");
     }
 
     @Test
-    public void givenShopUnits_whenAddedNewOffer_thenParentCategoryShouldUpdatePrice() {
+    void givenShopUnits_whenAddedNewOffer_thenParentCategoryShouldUpdatePrice() {
         ShopUnitImport category1 = getCategory1();
         ShopUnitImport category2 = getCategory2();
         ShopUnitImport offer1 = getOffer1();

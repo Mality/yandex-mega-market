@@ -29,9 +29,6 @@ public class ShopUnitStatisticUnit {
 
     private String date;
 
-    public ShopUnitStatisticUnit() {
-    }
-
     public String getStatisticId() {
         return statisticId;
     }

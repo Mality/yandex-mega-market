@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestPropertySource(
         locations = "classpath:application-test.properties")
-public class ImportValidatorTest {
+class ImportValidatorTest {
 
     @Mock
     private ShopUnitRepository repository;
@@ -33,7 +33,7 @@ public class ImportValidatorTest {
     private ImportValidator validator;
 
     @Test
-    public void givenShopUnitWithNonUniqueId_whenValidate_thenThrowShopUnitAlreadyExistException() {
+    void givenShopUnitWithNonUniqueId_whenValidate_thenThrowShopUnitAlreadyExistException() {
         ShopUnit shopUnit = new ShopUnit();
         shopUnit.setId("069cb8d7-bbdd-47d3-ad8f-82ef4c269df1");
         shopUnit.setName("unit");
@@ -49,7 +49,7 @@ public class ImportValidatorTest {
     }
 
     @Test
-    public void givenShopUnitWithOfferParent_whenValidate_thenThrowShopUnitValidationException() {
+    void givenShopUnitWithOfferParent_whenValidate_thenThrowShopUnitValidationException() {
         ShopUnit shopUnit = new ShopUnit();
         shopUnit.setId("069cb8d7-bbdd-47d3-ad8f-82ef4c269df1");
         shopUnit.setName("unit");
@@ -73,7 +73,7 @@ public class ImportValidatorTest {
     }
 
     @Test
-    public void givenShopUnitWithNullName_whenValidate_thenThrowShopUnitValidationException() {
+    void givenShopUnitWithNullName_whenValidate_thenThrowShopUnitValidationException() {
         ShopUnit shopUnit = new ShopUnit();
         shopUnit.setId("069cb8d7-bbdd-47d3-ad8f-82ef4c269df1");
         shopUnit.setName(null);
@@ -87,7 +87,7 @@ public class ImportValidatorTest {
     }
 
     @Test
-    public void givenCategoryWithNonNullPrice_whenValidate_thenThrowShopUnitValidationException() {
+    void givenCategoryWithNonNullPrice_whenValidate_thenThrowShopUnitValidationException() {
         ShopUnit shopUnit = new ShopUnit();
         shopUnit.setId("069cb8d7-bbdd-47d3-ad8f-82ef4c269df1");
         shopUnit.setName("category");
@@ -101,7 +101,7 @@ public class ImportValidatorTest {
     }
 
     @Test
-    public void givenOfferWithNullPrice_whenValidate_thenThrowShopUnitValidationException() {
+    void givenOfferWithNullPrice_whenValidate_thenThrowShopUnitValidationException() {
         ShopUnit shopUnit = new ShopUnit();
         shopUnit.setId("069cb8d7-bbdd-47d3-ad8f-82ef4c269df1");
         shopUnit.setName("offer");
@@ -115,7 +115,7 @@ public class ImportValidatorTest {
     }
 
     @Test
-    public void givenOfferWithPriceLessThanZero_whenValidate_thenThrowShopUnitValidationException() {
+    void givenOfferWithPriceLessThanZero_whenValidate_thenThrowShopUnitValidationException() {
         ShopUnit shopUnit = new ShopUnit();
         shopUnit.setId("069cb8d7-bbdd-47d3-ad8f-82ef4c269df1");
         shopUnit.setName("offer");
@@ -129,7 +129,7 @@ public class ImportValidatorTest {
     }
 
     @Test
-    public void givenShopUnitImportRequestWithNullItems_whenValidate_thenThrowShopUnitImportRequestValidationException() {
+    void givenShopUnitImportRequestWithNullItems_whenValidate_thenThrowShopUnitImportRequestValidationException() {
         ShopUnitImport shopUnitImport = new ShopUnitImport();
         shopUnitImport.setId("069cb8d7-bbdd-47d3-ad8f-82ef4c269df1");
         shopUnitImport.setName("offer");
@@ -146,7 +146,7 @@ public class ImportValidatorTest {
     }
 
     @Test
-    public void givenShopUnitImportRequestWithNonUniqueId_whenValidate_thenThrowShopUnitImportRequestValidationException() {
+    void givenShopUnitImportRequestWithNonUniqueId_whenValidate_thenThrowShopUnitImportRequestValidationException() {
         ShopUnitImport shopUnitImport1 = new ShopUnitImport();
         shopUnitImport1.setId("069cb8d7-bbdd-47d3-ad8f-82ef4c269df1");
         shopUnitImport1.setName("offer");
@@ -168,7 +168,7 @@ public class ImportValidatorTest {
     }
 
     @Test
-    public void givenShopUnitImportRequestWithIllegalDateTimeFormat_whenValidate_thenThrowShopUnitImportRequestValidationException() {
+    void givenShopUnitImportRequestWithIllegalDateTimeFormat_whenValidate_thenThrowShopUnitImportRequestValidationException() {
         ShopUnitImport shopUnitImport = new ShopUnitImport();
         shopUnitImport.setId("069cb8d7-bbdd-47d3-ad8f-82ef4c269df1");
         shopUnitImport.setName("offer");
